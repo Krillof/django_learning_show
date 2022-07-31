@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            {{ team.name }}
+        </title>
+    </head>
+    <body>
+        <a href="{% url 'index' %}"> назад </a>
+        <h1> {{ team.name }} </h1>
+        {% if team.creator.pk == user.pk %}
+            <h2> Здесь главный ТЫ.</h2>
+            <p>А здесь ты можешь добавить кому-нибудь ещё задачу: </p> 
+            {% for membership in memberships %}
+                <h5> {{ membership.user.username }}</h5>
+                <form action="{% url 'add_task' team.pk %}" method="POST">
+                    {% csrf_token %}
+                    <p>
+                        Заголовок:
+                        <input name="title">
+                    </p>
+                    <p>
+                        Текст:
+                        <input name="text">
+                    </p>
+                    <input name="to_membership" value="{{ membership.pk }}" hidden>
+                    <input type="submit" value="Добавить этому пользователю">
+                </form>
+            {% endfor %}
+
+        {% else %}
+            <h2> Главный здесь: {{ team.creator.username }} </h2>
+        {% endif %}
+            <h3>Твои НЕВЫПОЛНЕННЫЕ задачи: </h3>
+
+            <form action="{% url 'make_done_tasks' team.pk %}" method="POST">
+                {% csrf_token %}
+                {% for task in tasks %}
+                    <div>
+                        <h5>{{ task.title }}</h5>
+                        <p> {{ task.text }} </p>
+                        <input type="checkbox" name="{{ task.pk }}">
+                    </div>
+                {% endfor %}
+                <input type="submit" value="Поставить как выполненные выбранные задачи.">
+            </form>
+
+            
+        
+    </body>
+</html>

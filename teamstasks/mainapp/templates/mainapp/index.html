@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+             Добро пожаловать
+        </title>
+    </head>
+    <body>
+        <h3>
+            Добро пожаловать на сайт, с помощью которого можно удобно раздавать
+            задачи вашим командам! 
+        </h3>
+        <hr>
+        {% if auth  %}
+            <h3>Отлично, вы вошли! Добрый день, {{user.username}}!</h3>
+            <p>Чтобы выйти, нажмите на ссылку ниже: </p>
+            <a href="{% url 'exit'%}">Выйти</a>
+            <p>Если хотите, то вы можете создать свою команду: </p>
+            <form action="{% url 'create_team' %}" method="POST">
+                {% csrf_token %}
+                <p>
+                    <div>Название:</div>
+                    <input name="name">
+                </p>
+                <input type="submit" value="Создать">
+            </form>
+            <p>А вот список команд, которым вы принадлежите: </p>
+            {% for team in list %}
+                <p>
+                    <a href="{% url 'teams' team.pk %}"> {{ team.name }} </a>
+                </p>
+            {% endfor %}
+            <p>
+                А вот список команд, в которых вас нет. По нажатию, вы можете к ним
+                присоединится. 
+            </p>
+            {% for team in other_teams_list %}
+                <p>
+                    <a href="{% url 'get_in_team' team.pk %}"> {{ team.name }} </a>
+                </p>
+            {% endfor %}
+        {% else %}
+            <h3>Но сначала нужно зарегестрироваться или войти...</h3>
+            <p>
+                Просто введите логин и пароль - если вас нет, добавим и вы войдёте, а если
+                есть, то просто войдёте.
+            </p>
+            <form action="{% url 'register' %}" method="POST">
+                {% csrf_token %}
+                <p>
+                    <div>Логин:</div>
+                    <input name="username">
+                </p>
+                <p>
+                    <div>Пароль:</div>
+                    <input name="password">
+                </p>
+                <input type="submit" value="Войти">
+
+            </form>
+        {% endif %}
+    </body>
+</html>
